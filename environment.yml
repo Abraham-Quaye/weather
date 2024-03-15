@@ -1,0 +1,16 @@
+name: weather
+channels:
+  - conda-forge
+  - bioconda
+  - r
+  - nodefaults
+dependencies:
+  - python
+  - snakemake
+  - graphviz
+  - r-base
+  - r-tidyverse
+  - r-devtools
+  - r-glue
+  - r-patchwork
+  - r-tinytex
