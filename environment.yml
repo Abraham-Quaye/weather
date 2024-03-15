@@ -14,3 +14,4 @@ dependencies:
   - r-glue
   - r-patchwork
   - r-tinytex
+  - wget

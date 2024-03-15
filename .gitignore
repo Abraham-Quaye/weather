@@ -48,4 +48,8 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 
+# Large NOAA data
 data/
+
+# Snakemake
+.snakemake/
