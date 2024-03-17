@@ -3,7 +3,7 @@ rule fetch_ghcnd_data:
         "code/zsh/ghcnd_raw_data.sh"
     output:
         expand("data/ghcnd_data/ghcnd{name}", \
-        name = ["_all.tar.gz", "-inventory.txt", "-stations.txt"])
+        name = ["_all.tar.gz", "-inventory.txt"])
     shell:
         "{input}"
 

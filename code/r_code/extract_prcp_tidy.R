@@ -30,7 +30,7 @@ library(furrr)
 # ------------------------------
 
 jul_tday <- yday(today())
-window <- 100
+window <- 30
 # function to add col names to data
 quad_labs <- function(x){
   quad <- c(paste0("value", x), paste0("mflag", x),
@@ -55,10 +55,11 @@ process_daily_data <- function(frag_file){
   pivot_longer(starts_with("value"),
                names_to = "day",
                values_to = "prcp") %>%
-  # drop_na(prcp) %>%
   mutate(day = parse_number(day),
          date = ymd(paste0(year, "-", month, "-", day), quiet = T),
          prcp  = as.numeric(prcp)/100) %>% # prcp per cm
+  drop_na(date) %>%
+  replace_na(list(prcp = 0)) %>% 
   select(id, date, prcp) %>%
   mutate(julian_day = yday(date),
          days_apart = jul_tday - julian_day,

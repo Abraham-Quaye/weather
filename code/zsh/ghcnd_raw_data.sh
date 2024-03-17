@@ -2,7 +2,7 @@
 
 # README file https://www.ncei.noaa.gov/pub/data/ghcn/daily/readme.txt
 
-files=(ghcnd_all.tar.gz ghcnd-inventory.txt ghcnd-stations.txt)
+files=(ghcnd_all.tar.gz ghcnd-inventory.txt)
 
 for f in $files; do
     echo "Downloading ${f} ..."

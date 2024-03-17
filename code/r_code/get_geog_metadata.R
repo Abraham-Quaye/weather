@@ -28,5 +28,4 @@ read_fwf("data/ghcnd_data/ghcnd-inventory.txt",
   mutate(lat = round(lat),
          long = round(long)) %>%
   group_by(lat, long) %>%
-  mutate(region = cur_group_id()) %>%
   write_tsv(., "data/processed/prcp_geog_metadata.tsv")
