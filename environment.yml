@@ -17,4 +17,6 @@ dependencies:
   - coreutils
   - r-furrr
   - r-ggsci
+  - r-maps
+  - r-showtext
   - wget

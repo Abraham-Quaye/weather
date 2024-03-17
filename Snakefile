@@ -7,17 +7,6 @@ rule fetch_ghcnd_data:
     shell:
         "{input}"
 
-rule enumerate_tar_files:
-    input:
-        "data/ghcnd_data/ghcnd_all.tar.gz"
-    output:
-        "data/ghcnd_data/tar_files.txt"
-    shell:
-        """
-        echo "file_name" > {output}
-        tar tf {input} | grep ".dly" >> {output}
-        """
-
 rule subset_split_data:
     input:
         raw = "data/ghcnd_data/ghcnd_all.tar.gz",
@@ -48,8 +37,16 @@ rule save_prcp_geog_metadata:
     shell:
         "{input.script}"
 
+rule plot_prcp_data:
+    input:
+        script = "code/r_code/plot_prcp_data.R",
+        tidy_prcp = rules.save_tidy_prcp_data.output,
+        geog_data = rules.save_prcp_geog_metadata.output
+    output:
+        "plots/prcp_plot.png"
+    shell:
+        "{input.script}"
+
 rule run_project:
     input:
-        rules.enumerate_tar_files.output,
-        rules.save_tidy_prcp_data.output,
-        rules.save_prcp_geog_metadata.output
+        rules.plot_prcp_data.output
