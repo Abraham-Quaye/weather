@@ -49,4 +49,4 @@ rule merge_plot_prcp_data:
 
 rule run_project:
     input:
-        rules.plot_prcp_data.output
+        rules.merge_plot_prcp_data.output
