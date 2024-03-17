@@ -37,9 +37,9 @@ rule save_prcp_geog_metadata:
     shell:
         "{input.script}"
 
-rule plot_prcp_data:
+rule merge_plot_prcp_data:
     input:
-        script = "code/r_code/plot_prcp_data.R",
+        script = "code/r_code/plot_region_prcp.R",
         tidy_prcp = rules.save_tidy_prcp_data.output,
         geog_data = rules.save_prcp_geog_metadata.output
     output:

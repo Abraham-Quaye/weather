@@ -29,7 +29,7 @@ library(furrr)
 # SFLAG31    269-269   Character
 # ------------------------------
 
-jul_tday <- yday(today())
+jul_tday <- yday(today() - 5)
 window <- 30
 # function to add col names to data
 quad_labs <- function(x){

@@ -11,10 +11,11 @@ prcp_data <- read_tsv("data/processed/tidy_prcp_data.tsv.gz")
 
 geog_metadata <- read_tsv("data/processed/prcp_geog_metadata.tsv")
 
-# join data and remove incomplete data
-this_yr <- year(today())
-year_to_plot <- 2020
+mod_today <- today() - 5
+this_yr <- year(mod_today)
+year_to_plot <- this_yr
 
+# join data and remove incomplete data
 full_prcp_data <- inner_join(prcp_data, geog_metadata, by = "id") %>%
   filter((year != first_yr & year != last_yr) | year == this_yr) %>%
   group_by(lat, long, year) %>%
@@ -33,11 +34,41 @@ plt_ready_data <- full_prcp_data %>%
   # (use histogram to see that most values are less than 2)
   mutate(zscore = case_when(zscore >= 2 ~ 2,
                             zscore <= -2 ~ -2,
-                            .default = zscore))
+                            TRUE ~ zscore))
 
-date_range <- glue("{format(today() - 30, '%B %d')} to {format(today(), '%B %d')}, {year_to_plot}")
+# ------- logic for date ranges
+mod_end_yr <- year(mod_today)
+mod_start_yr <- year(mod_today - 30)
+mod_end_mnth <- month(mod_today)
+mod_start_mnth <- month(mod_today - 30)
 
-# map outline
+date_start <- case_when(
+                        # same month, same year
+                        ((mod_start_mnth == mod_end_mnth &
+                            mod_start_yr == mod_end_yr) |
+                        # different month, same year
+                        (mod_start_mnth != mod_end_mnth &
+                           mod_start_yr == mod_end_yr)) ~ format(mod_today - 30, "%B %e"),
+                        # different month, different year
+                        (mod_start_mnth != mod_end_mnth &
+                           mod_start_yr != mod_end_yr) ~ format(mod_today - 30, "%B %e, %Y"),
+                        TRUE ~ NA_character_)
+
+date_end <- case_when(
+                      #same month, same year
+                      (mod_start_mnth == mod_end_mnth &
+                          mod_start_yr == mod_end_yr) ~ format(mod_today, "%e, %Y"),
+     # different month, same year
+                      ((mod_start_mnth != mod_end_mnth &
+                          mod_start_yr == mod_end_yr) |
+                         # different month, different year
+                        (mod_start_mnth != mod_end_mnth &
+                           mod_start_yr != mod_end_yr)) ~ format(mod_today, "%B %e, %Y")
+   )
+
+date_range <- glue("{date_start} to {date_end}")
+
+# ----- map world outline
 world <- map_data("world") %>%
   filter(region != "Antarctica")
 
@@ -48,8 +79,9 @@ p <- plt_ready_data %>%
   geom_polygon(data = world ,
                aes(long, lat, group = group),
                fill = NA, color = "grey30 ", linewidth = 0.1) +
-  # plot the z-scores
+  # plot the z-scores with geom_tile
   geom_tile() +
+  # aesthetics -----
   coord_fixed() +
   scale_fill_gradient2(low = "#ffff50", mid = "#ffffff", high = "#0000ff",
                        midpoint = 0,
@@ -62,7 +94,7 @@ p <- plt_ready_data %>%
         panel.background = element_rect(fill = "#000000", color = "#000000"),
         panel.grid = element_blank(),
         axis.text = element_blank(),
-        plot.title = element_text(size = 24, colour = "#ffffff",
+        plot.title = element_text(size = 30, colour = "#ffffff",
                                   face = "bold", hjust = 0.5),
         plot.subtitle = element_text(size = 16, colour = "#ffffff",
                                      hjust = 0.5),
