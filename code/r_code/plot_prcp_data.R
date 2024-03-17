@@ -42,7 +42,7 @@ world <- map_data("world") %>%
   filter(region != "Antarctica")
 
 
-plt_ready_data %>%
+p <- plt_ready_data %>%
   ggplot(aes(long, lat, fill = zscore)) +
   # world map outlines
   geom_polygon(data = world ,
@@ -78,4 +78,4 @@ plt_ready_data %>%
         legend.key.height = unit(0.2, "cm")
         )
 
-ggsave("plots/prcp_plot.png", dpi = 350, width = 15, height = 7.5)  
+ggsave(plot = p, "plots/prcp_plot.png", dpi = 350, width = 15, height = 7.5)  
