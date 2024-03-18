@@ -11,7 +11,7 @@ echo "Weather environment activated successfully!!! " ||
 snakemake -c1 -R fetch_ghcnd_data
 snakemake -c1 -R run_project
 
-run_date=$(date | date | cut -d " " -f 2,3)
+run_date=$(date | date | cut -d " " -f 2,3,6)
 
 git add plots/prcp_plot.png
 
