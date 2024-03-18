@@ -56,3 +56,4 @@ data/
 .snakemake/
 
 .DS_Store
+*.log
