@@ -4,6 +4,8 @@ rule fetch_ghcnd_data:
     output:
         expand("data/ghcnd_data/ghcnd{name}", \
         name = ["_all.tar.gz", "-inventory.txt"])
+    conda:
+        "environment.yml"
     shell:
         "{input}"
 
@@ -16,6 +18,8 @@ rule subset_split_data:
         suff = list(map(chr, range(97, 123)))),
         expand("data/processed/temp/xc{suff}.gz", \
         suff = list(map(chr, range(97, 119))))
+    conda:
+        "environment.yml"
     shell:
         "{input.script}"
 
@@ -25,6 +29,8 @@ rule save_tidy_prcp_data:
         script = "code/r_code/extract_prcp_tidy.R"
     output:
         "data/processed/tidy_prcp_data.tsv.gz"
+    conda:
+        "environment.yml"
     shell:
         "{input.script}"
 
@@ -34,6 +40,8 @@ rule save_prcp_geog_metadata:
         script = "code/r_code/get_geog_metadata.R"
     output:
         "data/processed/prcp_geog_metadata.tsv"
+    conda:
+        "environment.yml"
     shell:
         "{input.script}"
 
@@ -44,6 +52,8 @@ rule merge_plot_prcp_data:
         geog_data = rules.save_prcp_geog_metadata.output
     output:
         "plots/prcp_plot.png"
+    conda:
+        "environment.yml"
     shell:
         "{input.script}"
 
