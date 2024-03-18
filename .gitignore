@@ -54,3 +54,5 @@ data/
 
 # Snakemake
 .snakemake/
+
+.DS_Store
