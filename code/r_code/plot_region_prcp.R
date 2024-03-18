@@ -89,7 +89,7 @@ p <- plt_ready_data %>%
                        labels = c("<-2", "-1", "0", "1", ">2")) +
   labs(title = glue("Precipitation Levels Around the Globe from {date_range}"),
        subtitle = "Standardized Z-scores for at Least the Last 30 Years of Records",
-       caption = "Precipitation data obtained from NOAA GHCND daily records") +
+       caption = "Precipitation data obtained from NOAA GHCN daily records") +
   theme(plot.background = element_rect(fill = "#000000", color = "#000000"),
         panel.background = element_rect(fill = "#000000", color = "#000000"),
         panel.grid = element_blank(),
