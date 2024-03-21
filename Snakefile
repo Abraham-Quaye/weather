@@ -49,13 +49,22 @@ rule merge_plot_prcp_data:
     input:
         script = "code/r_code/plot_region_prcp.R",
         tidy_prcp = rules.save_tidy_prcp_data.output,
-        geog_data = rules.save_prcp_geog_metadata.output
+        geog_data = rules.save_prcp_geog_metadata.output,
+        raw_data = rules.fetch_ghcnd_data.output,
+        split_files = rules.subset_split_data.output
     output:
         "plots/prcp_plot.png"
     conda:
         "environment.yml"
     shell:
-        "{input.script}"
+        """
+        {input.script}
+        echo removing data files
+        rm {input.raw_data}
+        rm {input.split_files}
+        rm {input.tidy_prcp}
+        rm {input.geog_data}
+        """
 
 rule run_project:
     input:
