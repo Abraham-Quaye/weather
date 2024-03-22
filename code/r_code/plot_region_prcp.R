@@ -11,7 +11,7 @@ prcp_data <- read_tsv("data/processed/tidy_prcp_data.tsv.gz")
 
 geog_metadata <- read_tsv("data/processed/prcp_geog_metadata.tsv")
 
-mod_today <- today() - 5
+mod_today <- today() - 1
 this_yr <- year(mod_today)
 year_to_plot <- this_yr
 
