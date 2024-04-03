@@ -13,7 +13,7 @@ prcp_data <- read_tsv("data/processed/tidy_prcp_data.tsv.gz") %>%
 tmax_data <- read_tsv("data/processed/tidy_tmax_data.tsv.gz") %>%
   rename(measure = element)
 
-geog_metadata <- read_tsv("data/processed/geog_metadata.tsv.gz")
+geog_rawdata <- read_tsv("data/processed/geog_metadata.tsv.gz")
 
 elemnt_geog <- function(elmnt){
   return(geog_rawdata %>%
