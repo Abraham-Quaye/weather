@@ -42,7 +42,7 @@ data_widths = c(11, 4, 2, 4, rep(c(5, 1, 1, 1), 31))
 data_colNames = c("id", "year", "month", "element",
                   unlist(map(1:31, quad_labs)))
 
-process_daily_data <- function(frag_file){
+process_daily_data <- function(frag_file, elmnt){
   print(paste("Now processing", frag_file))
   
   p_data <- read_fwf(frag_file,
@@ -50,17 +50,20 @@ process_daily_data <- function(frag_file){
            col_names = data_colNames),
            na = c("NA", "-9999"),
            col_types = cols(.default = col_character()),
-           col_select = c(id, year, month,
+           col_select = c(id, year, month, element,
            starts_with("value"))) %>%
   pivot_longer(starts_with("value"),
                names_to = "day",
-               values_to = "prcp") %>%
+               values_to = "reading") %>%
   mutate(day = parse_number(day),
          date = ymd(paste0(year, "-", month, "-", day), quiet = T),
-         prcp  = as.numeric(prcp)/100) %>% # prcp per cm
+         reading  = ifelse(element == "PRCP",
+                           as.numeric(reading)/100, # prcp in cm (from tenths of mm)
+                           as.numeric(reading)/10 # tmax in C (from tenths of C)
+                           )) %>%
   drop_na(date) %>%
-  replace_na(list(prcp = 0)) %>% 
-  select(id, date, prcp) %>%
+  replace_na(list(reading = 0)) %>% 
+  select(id, date, element, reading) %>%
   mutate(julian_day = yday(date),
          days_apart = jul_tday - julian_day,
          is_within_range = case_when(days_apart < window & days_apart > 0 ~ T,
@@ -71,20 +74,29 @@ process_daily_data <- function(frag_file){
          year = ifelse(days_apart < 0 & is_within_range, year + 1, year)
          ) %>%
   filter(is_within_range) %>%
-  group_by(id, year) %>%
-  summarise(prcp = sum(prcp), .groups = "drop")
+  group_by(id, year, element) %>%
+  summarise(m_reading = mean(reading), .groups = "drop") %>%
+  filter(element == elmnt) %>%
+  select(-element)
   
   return(p_data)
 }
 
 frag_files <- list.files("data/processed/temp",
-                         pattern = "^x[abc][a-z]\\.gz",
+                         pattern = "^x[a-z][a-z]\\.gz",
                          full.names = T)
 
-plan(multicore, workers = 8)
-future_map_dfr(frag_files, ~process_daily_data(.x), .progress = T) %>%
-  group_by(id, year) %>%
-  summarise(prcp = sum(prcp), .groups = "drop") %>%
-  write_tsv(., "data/processed/tidy_prcp_data.tsv.gz", col_names = T)
+tidy_element_data <- function(element){
+  plan(multicore, workers = 9)
+  future_map_dfr(frag_files,
+                 ~process_daily_data(frag_file = .x, elmnt = element),
+                 .progress = T) %>%
+    group_by(id, year) %>%
+    summarise(element = mean(m_reading), .groups = "drop") %>%
+    write_tsv(., paste0("data/processed/tidy_", tolower(element), "_data.tsv.gz"),
+              col_names = T)
+}
+
+map(c("PRCP", "TMAX"), tidy_element_data)
 
 print("Script Complete!!!")

@@ -14,46 +14,49 @@ rule subset_split_data:
         raw = "data/ghcnd_data/ghcnd_all.tar.gz",
         script = "code/zsh/subset_concat_tar.sh"
     output:
-        expand("data/processed/temp/x{pre}{suff}.gz", pre = ["a", "b"], \
+        expand("data/processed/temp/x{pre}{suff}.gz",
+        pre = list(map(chr, range(97, 105))), \
         suff = list(map(chr, range(97, 123)))),
-        expand("data/processed/temp/xc{suff}.gz", \
-        suff = list(map(chr, range(97, 119))))
+        expand("data/processed/temp/xi{suff}.gz", \
+        suff = list(map(chr, range(97, 100))))
     conda:
         "environment.yml"
     shell:
         "{input.script}"
 
-rule save_tidy_prcp_data:
+rule save_tidy_element_data:
     input:
         frags = rules.subset_split_data.output,
-        script = "code/r_code/extract_prcp_tidy.R"
+        script = "code/r_code/extract_element_tidy.R"
     output:
-        "data/processed/tidy_prcp_data.tsv.gz"
+        "data/processed/tidy_prcp_data.tsv.gz",
+        "data/processed/tidy_tmax_data.tsv.gz"
     conda:
         "environment.yml"
     shell:
         "{input.script}"
 
-rule save_prcp_geog_metadata:
+rule save_element_geog_metadata:
     input:
         inventory = "data/ghcnd_data/ghcnd-inventory.txt",
         script = "code/r_code/get_geog_metadata.R"
     output:
-        "data/processed/prcp_geog_metadata.tsv"
+        "data/processed/geog_metadata.tsv.gz"
     conda:
         "environment.yml"
     shell:
         "{input.script}"
 
-rule merge_plot_prcp_data:
+rule merge_plot_element_data:
     input:
-        script = "code/r_code/plot_region_prcp.R",
-        tidy_prcp = rules.save_tidy_prcp_data.output,
-        geog_data = rules.save_prcp_geog_metadata.output,
+        script = "code/r_code/plot_region_element.R",
+        tidy_prcp = rules.save_tidy_element_data.output,
+        geog_data = rules.save_element_geog_metadata.output,
         raw_data = rules.fetch_ghcnd_data.output,
         split_files = rules.subset_split_data.output
     output:
-        "plots/prcp_plot.png"
+        "plots/prcp_plot.png",
+        "plots/tmax_plot.png"
     conda:
         "environment.yml"
     shell:
@@ -68,4 +71,4 @@ rule merge_plot_prcp_data:
 
 rule run_project:
     input:
-        rules.merge_plot_prcp_data.output
+        rules.merge_plot_element_data.output

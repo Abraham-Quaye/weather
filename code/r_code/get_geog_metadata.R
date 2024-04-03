@@ -16,16 +16,14 @@ library(tidyverse)
 # LASTYEAR     42-45   Integer
 # ------------------------------
 
-read_fwf("data/ghcnd_data/ghcnd-inventory.txt",
+read_fwf("../ghcnd_data/ghcnd-inventory.txt",
          fwf_cols(id = c(1, 11),
          lat = c(13, 20),
          long = c(22, 30),
          element = c(32, 35),
          first_yr = c(37, 40),
          last_yr = c(42, 45))) %>%
-  filter(element == "PRCP") %>%
-  select(-element) %>%
+  filter(element %in% c("PRCP", "TMAX")) %>%
   mutate(lat = round(lat),
          long = round(long)) %>%
-  group_by(lat, long) %>%
-  write_tsv(., "data/processed/prcp_geog_metadata.tsv")
+  write_tsv(., "data/processed/geog_metadata.tsv.gz")
