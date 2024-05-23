@@ -16,7 +16,7 @@ library(tidyverse)
 # LASTYEAR     42-45   Integer
 # ------------------------------
 
-read_fwf("../ghcnd_data/ghcnd-inventory.txt",
+read_fwf("data/ghcnd_data/ghcnd-inventory.txt",
          fwf_cols(id = c(1, 11),
          lat = c(13, 20),
          long = c(22, 30),
