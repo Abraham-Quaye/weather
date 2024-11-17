@@ -119,7 +119,7 @@ weather_plots <- function(elmnt){
     # plot utah outline
     geom_polygon(data = utah, 
                aes(long, lat),
-               fill = NA, color = "grey") +
+               fill = NA, color = "#000000", linewidth = 0.1) +
     # aesthetics -----
   coord_fixed() +
     scale_fill_gradient2(low = lh[[1]], mid = "#ffffff", high =lh[[2]] ,
