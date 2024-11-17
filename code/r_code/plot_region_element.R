@@ -97,6 +97,8 @@ date_range <- glue("{date_start} to {date_end}")
 world <- map_data("world") %>%
   filter(region != "Antarctica")
 
+utah <- map_data("state") %>%
+  filter(region == "utah")
 
 weather_plots <- function(elmnt){
   # color scheme for low and high
@@ -109,11 +111,15 @@ weather_plots <- function(elmnt){
   ready_to_plt[[elmnt]] %>%
     ggplot(aes(long, lat, fill = zscore)) +
     # world map outlines
-    geom_polygon(data = world ,
+    geom_polygon(data = world,
                  aes(long, lat, group = group),
                  fill = NA, color = "grey30 ", linewidth = 0.1) +
     # plot the z-scores with geom_tile
     geom_tile() +
+    # plot utah outline
+    geom_polygon(data = utah, 
+               aes(long, lat),
+               fill = NA, color = "grey") +
     # aesthetics -----
   coord_fixed() +
     scale_fill_gradient2(low = lh[[1]], mid = "#ffffff", high =lh[[2]] ,
