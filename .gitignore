@@ -57,7 +57,3 @@ data/
 
 .DS_Store
 *.log
-
-#new analysis
-code/r_code/nasa_vis/*
-plots/temp_anomalies.png

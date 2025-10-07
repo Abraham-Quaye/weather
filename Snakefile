@@ -68,7 +68,15 @@ rule merge_plot_element_data:
         rm {input.tidy_prcp}
         rm {input.geog_data}
         """
-
+rule temperature_trends:
+    input:
+        r_script = "code/r_code/nasa_vis/nasa_temp_anoms.R"
+    output:
+        "plots/temp_anomalies.png"
+    shell:
+        "{input.r_script}"
+    
 rule run_project:
     input:
         rules.merge_plot_element_data.output
+        # rules.temperature_trends.output
