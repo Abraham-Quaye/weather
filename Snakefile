@@ -78,5 +78,5 @@ rule temperature_trends:
     
 rule run_project:
     input:
-        rules.merge_plot_element_data.output
-        # rules.temperature_trends.output
+        rules.merge_plot_element_data.output,
+        rules.temperature_trends.output
